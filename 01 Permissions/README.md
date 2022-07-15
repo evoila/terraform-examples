@@ -24,3 +24,7 @@ Fängt man nicht direkt mit der Automatisierung an und fängt erst per Hand an, 
 ## Aufräumen
 
 1. Erstellten Resource Pool im vCenter wieder löschen
+
+## Von Hand angefangen?
+
+Wenn von Hand angefangen wurde müssen alle Berechtigungen, die auf einem bestimmten Objekt gesetzt wurden in Terraform überführt werden. HIER GIBT ES KEINE IMPORT MÖGLICHKEITEN. Es müssen alle Rechte übernommen werden sonst Rechteverlust... (Kann Problem auf vCenter / Cluster Ebene sein)
