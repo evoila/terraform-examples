@@ -1,0 +1,19 @@
+tz_name: "TZ-Overlay"
+tier0_name: "T0-TKG-LAB"
+edge_cluster_name: "Edge-Cluster-TKG"
+
+environment:
+    dev:
+        switches:
+        - name: ls-terraform-demo-dev-sw1
+          cidr: 1.1.1.1/24
+        - name: ls-terraform-demo-dev-sw2
+          cidr: 2.2.2.1/24
+    prod:
+        switches:
+        - name: ls-terraform-demo-prod-sw1
+          cidr: 3.3.3.1/24
+    test:
+        switches:
+        - name: ls-terraform-demo-test-sw1
+          cidr: 4.4.4.1/24
