@@ -1,49 +1,49 @@
 # 404 Option not found
 
-In bestimmten Fällen kann es vorkommen, dass der Terraform Provider nicht alle Konfigurationsparameter einer Ressource unterstützt. In diesen Fällen muss man sich was besonderes überlegen...
+This example shows, that terraform does not support all configuration parameters of some resources. For this cases you have to think for something else.
 
 ## Setup
 
-1. Überprüfen, dass das HTTP Application Profile terraform-demo-application-profile nicht existiert
+1. Check, that the http application profile terraform-demo-application-profile does not exist. 
 
-## Durchführung
+## Execution
 
 1. terraform init
 2. terraform plan
-    - Hier sollte angezeigt werden, dass das Application Profile erstellt wurde.
+    - Displays, that an application profile will be created.
 3. terraform apply
-4. Überprüfen über die API, dass das HTTP Profile erstellt wurde.
+4. Check that the http profile exist via API.
     - `cat terraform.tfstate | jq -r '.resources[].instances[0].attributes.id' | xargs -I % curl -u "$NSXT_USERNAME:$NSXT_PASSWORD" -k https://$NSXT_MANAGER_HOST/api/v1/loadbalancer/application-profiles/% | jq .`
-    - Hier ist dann auch zu sehen, dass das API Objekt auch Konfigurations Parameter besitzt, die Terraform nicht kennt. Beispielsweise: Respons Body Size. Bei manchen Applikationen muss diese hochgesetzt werden. Somit hat man über nur Terraform ein Problem.
+    - The shown object does show some configuration parameters, which terraform does not know and thus does not support. For example: Response Body Size. For some applications this value has to be increased. This is a problem for terraform.
 
-5. Nun hat man zwei Optionen. Entweder man baut das Objekt außerhalb von Terraform (und importiert es über eine Data Ressource (Oft nicht möglich, weil bestimmte Attribute fehlen oder es keine Data Ressource dazu gibt)) oder man baut das Objekt über Terraform und passt dieses nachgelagert über ein Skript in einer Pipeline an.
-6. Hier haben wir uns für die Variante mit dem Skript entschieden. Das Script passt die Response Header Size entsprechend an und updatet die NSX-T Ressource über die API.
-    - Ausführen des Skiprt ./update-object.sh
-7. Mit Befehl aus Schritt 4 prüfen, dass die Response Header Size angepasst wurde.
+5. There are two options to solve this problem. Either you have to create the object externally (without terraform) and import the resource as data resource (This is often not possible, because some attributes are still missing or for some resources there does not exist a data resource) or you could create the object via terraform and modify the object via a following script.
+6. In this example we decided to use a script. The script modifies the response header size accordingly and updates the nsx-t resource via API
+    - Execute the script ./update-object.sh
+7. Check with the command of step 4, that the response header size changed.
 8. terraform plan
-    - Zeigt keine Änderungen, weil es diesen Parameter garnicht kennt
-9. Anpassen der Terraform konfiguration (bspw. Request Header Size auf 2048)
+    - Does not display any changes, because terraform does not know this parameter. 
+9. Change the terraform configuration (change request header size to 2048)
 10. terraform plan
-    - Zeigt nur die entsprechende Änderung an
+    - Only displays the request header size change
 11. terraform apply
-12. Befehl aus Schritt 4 ausführen
-    - Hier sieht man wieder, dass das Property vom Script wieder zurückgesetzt wurde
-    -> NACH JEDEM TERRAFORM APPLY (welches die entsprechende Ressource anpasst) MUSS DAS SCRIPT AUSGEFÜHRT WERDEN! Deswegen in einem Pipeline Schritt nach terraform apply
+12. Execute command of step 4 again
+    - Terraform changed the property back to its default value
+    -> You have to execute the script after every terraform apply (which modifies the resource). In a pipeline you would execute the script in a step / job after terraform apply
 
-## Aufräumen
+## Cleanup
 
 1. terraform destroy
 
-## Was haben wir hieraus gelernt?
+## What did we lean?
 
-Terraform unterstützt nicht immer alle Objekte bzw dessen Properties. Deswegen ist es notwendig Workarounds zu finden und GLEICHZEITIG ein Herstellerticket zu eröffnen, sodass das Property vielleicht nachgepflegt werden kann.
-Die Workarounds sind entweder:
-- Komplette Erstellung des Objekts außerhalb von Terraform über die API
-    - Nachträglich durch terraform import importieren, wenn der Provider die entsprechende Property kennt
-    - Nachteil: Nicht alle Ressourcen haben in Terraform eine DATA Ressource und können somit nicht richtig in Terraform genutzt werden
-- Anpassung über nachgelagertes Script
-    - Entsprechende Property wird über Script angepasst
-    - Nachteil: Muss nach jedem terraform apply ausgeführt werden, welches das entsprechende Objekt anpasst
-    - Nachteil: Die gewünschte Konfiguration kann kurzzeitig nicht gesetzt sein (Zeit zwischen terraform apply und Ausführung des Skripts)
+Terraform does not support all objects respectively it's properties. This it it necessary to find some workarounds and on the same time create a support ticket, so the developer maybe can add the property in a following release.
+The workarounds can be either:
+- Completly create the object outside terraform via the api
+    - Import the object with terraform import afterwards, if the provider supports it.
+    - Disadvantage: Not all terraform resource have a data resource and thus can not be used in terraform
+- Modification with a script after terraform apply:
+    - Modify the property via script
+    - Disadvantage: Has to be run after every terraform apply, which modifies the object
+    - Disadvantage: The configuration could be wrong for a short amount of time (the time between terraform apply and the execution of the script.)
 
-Auf das manuelle Anlegen der Ressource sollte weiterhin verzichtet werden, da dies bei einem Wiederaufbau zu erhöhtem Aufwand führen kann.
+Nevertheless you should still not consider creating resources by hand, because it creates overhead, when you have to recreate the environment.

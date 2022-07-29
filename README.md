@@ -1,18 +1,18 @@
 # terraform-examples
 
-Dieses Repository beinhaltet einige Terraform Beispiele, welche zeigen sollen, wieso man mit der Automatisierung bei Tag 0 anfangen sollte und wieso es schlecht ist, Dinge per Hand anzufassen
+This repository contains some terraform examples, which should show, why it is important to start with automation on day 0 and why it isn't a good idea to change options by hand.
 
-## Globales Setup
+## Global Setup
 
-Für den Gebrauch der beispiele wird Terraform Version v1.2.5 benötigt.
+All examples were tested with terraform version v1.2.5.
 
-Für den Gebrauch der entsprechenden Provider müssen folgende Umgebungsvariablen gesetzt werden:
+Before using this examples set the following environment variables:
 
-- `NSXT_MANAGER_HOST`(Ohne HTTP/S)
+- `NSXT_MANAGER_HOST`(without HTTP/S)
 - `NSXT_USERNAME`
 - `NSXT_PASSWORD`
-- `VSPHERE_SERVER` (Ohne HTTP/S)
+- `VSPHERE_SERVER` (without HTTP/S)
 - `VSPHERE_USER`
 - `VSPHERE_PASSWORD`
 
-Es wurden alle Beispiele in der Sandbox vcsasdbx01 / nsxsdbx01 auf Funktionalität überprüft
+All examples were tested in our sandbox vcsasdbx01 / nsxsdbx01.

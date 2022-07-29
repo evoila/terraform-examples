@@ -1,24 +1,24 @@
 # Allow Modifications
 
-Dieses Beispiel soll zeigen, wie man Terraform sagt, dass es bestimmte Änderungen ignorieren soll. Dies ist beispielsweise nötig, wenn andere System ein Objekt verändern müssen (beispielsweise Bosh Director und NSGroups).
+This example should show, how to tell terraform how to ignore specific changes to the infrastructure. This is the case, when other systems modify an object (e.g. bosh director and nsgroups).
 
 ## Setup
 
-1. Überprüfen, dass die NSGroup terraform-nsgroup-demo im NSX-T nicht existiert.
+1. Check, that the nsgroup terraform-nsgroup-demo does not exist in NSX-T.
 
-## Durchführung
+## Execution
 
 1. terraform init
 2. terraform plan
-    - Hier sollte angezeigt werden, dass eine neue NSGROUP erstellt wird
+    - Terraform displays, that it will create a new nsgroup.
 3. terraform apply
-4. Im NSX-T zeigen, dass NSGroup erstellt wurde.
-5. Manuell ein Member hinzufügen (bspw. irgendein LogicalPort)
+4. Take a look in NSX-T. Check that the nsgroup was created.
+5. Manually add a member to the nsgroup via gui (some logical port for example)
 6. terraform plan
-    - Hier wird angezeigt, dass der Manuell hinzugefügte Member wieder gelöscht wird.
+    - Here terraform shows, that it will delete the member again.
 7. terraform apply
-8. Zeigen, dass NSGroup wieder leer ist.
-9. NSGroup mit folgendem Code erweitern:
+8. Take a look at the nsgroup again. The group should be empty again.
+9. Extend the nsgroup with the following code:
 
 ```hcl
 lifecycle {
@@ -28,16 +28,15 @@ lifecycle {
 }
 ```
 
-10. Nochmals Member zur NSGroup hinzufügen
+10. Manually add a member to the nsgroup again
 11. terraform plan
-    - Hier werden nun keine Änderungen mehr angezeigt "No changes."
-12. Modifikation der NSGroup über Terraform weiterhin möglich. (bspw. Name ändern)
+    - Here terraform should display "No changes."
+12. Other modifications to the nsgroup are still possible via terraform (change the name for example)
 13. terraform plan
-    - Es wird angezeigt, dass nur der Name geändert wird
+    - Displays, that it want's to change the nsgroup name
 14. terraform apply
-15. Zeigen, dass Namen sich im NSX-T geändert hat, aber das Member immernoch in der NSGroup ist.
+15. Take a look at the nsgroup again. The name of the nsgroup should have changed.
 
-
-## Aufräumen
+## Cleanup
 
 1. terraform destroy

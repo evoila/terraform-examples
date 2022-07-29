@@ -1,30 +1,31 @@
 # Permissions
 
-Dieses Beispiel soll zeigen, wieso man bei den vCenter Permissions direkt mit der Automatisierung anfangen sollte.
-Fängt man nicht direkt mit der Automatisierung an und fängt erst per Hand an, können unerwartete Dinge passieren (Verlust von Rechten)!
+This example should show, why it is important to start automation of vCenter permissions on day 0.
+If you don't start automation of permissions on day 0 some unexpected things could happen (loss of permissions etc.)
 
 ## Setup
 
-1. Erstelle einen Resource Pool im vCenter mit dem Namen terraform-permission-demo
-2. Gehe beim Resource Pool auf den Permissions Tab und weise einem beliebigen (nicht der Terraform Demo User!) irgendwelche Berechtigungen auf dem Ordner.
+1. Create the resource pool terraform-permission-demo in vCenter by hand.
+2. Select the resource pool, change into the permissions tab and set permissions for a random user on the resource pool. (Caution: Do not use the terraform demo user here)
 
-## Durchführung
+## Execution
 
 1. terraform init
 2. terraform plan
-    - Hier sollte Terraform nur die Entity Permission anlegen, die im Terraform File angegeben sind.
+    - Here terraform should only display the permissions, which are set by the terraform file.
 3. terraform apply
-4. Im vCenter schauen, dass noch BEIDE Rechte vorhanden sind
+4. Take a look at the vCenter permissions tab again. Both permissions should be set.
 5. terraform plan
-    - Hier will Terraform dann plötzlich eine der beiden Permissions (die die mit Hand angelegt wurde) löschen
+    - Here terrafrom suddenly want's to delete the permission, which was created by hand
 6. terraform apply
-7. Im vCenter schauen und feststellen, dass die zuvor mit Hand angelegte Permission nun nicht mehr da ist
-    -> Wenn man nicht aufpasst, können unvorhergesehene Nebeneffekte (Permission Verlust) auftreten
+7. Take a look at the vCenter again. You will notice, that the permission, which was created by hand is gone.
+   -> If you are not careful enough unexpected side effects could happen (like loosing permissions).
 
-## Aufräumen
+## Cleanup
 
-1. Erstellten Resource Pool im vCenter wieder löschen
+1. Delete the created resource pool in vCenter.
 
-## Von Hand angefangen?
+## Started by hand?
 
-Wenn von Hand angefangen wurde müssen alle Berechtigungen, die auf einem bestimmten Objekt gesetzt wurden in Terraform überführt werden. HIER GIBT ES KEINE IMPORT MÖGLICHKEITEN. Es müssen alle Rechte übernommen werden sonst Rechteverlust... (Kann Problem auf vCenter / Cluster Ebene sein)
+If you started to set permissions by hand all permissions on the specific object have to be transfered to terraform.
+Terraform does not support import functionaliy for permissions. All permissions have to be transfered, else permission loss could happen (This is a big problem on the vCenter / cluster layer)

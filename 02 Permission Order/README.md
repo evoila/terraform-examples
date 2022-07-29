@@ -1,22 +1,22 @@
 # Permission Order
 
-Dieses Beispiel soll zeigen, dass es bei manchen Terraform Ressourcen wichtig ist sogar auf die Reihenfolge von einzelnen "inneren" Objekten zu achten, da sonst beim Apply mehr Änderungen gemacht werden als eigentlich notwendig!
+This example should show, why for some terraform resources it is important to watch out for the order for "inner" objects, since otherwise changes could happen, when applying the terraform configuration.
 
-Als Beispiel dienen hier die vSphere Permissions. Diese müssen alphabetisch sortiert sein!
-(Beispiel semi gut - Früher wurden die Änderungen bei jedem Plan angezeigt :/ . Vielleicht aber trotzdem gut, um zu zeigen, dass manchmal komische Pläne das richtige bewirken)
+We use vSphere permissions here for example. These have to be orderer alphabetically.
+(This example is not good in newer terraform versions. In earlier versions terraform showed changes for every plan. Maybe it's a good example that some strange plans still could do the right things)
 
 ## Setup
 
-1. Überprüfen, dass der Resource Pool terraform-permission-order-demo nicht existiert.
+1. Check, that the resource pool terraform-permission-order-demo does not exist.
 
-## Durchführung
+## Execution
 
 1. terraform init
 2. terraform plan
-    - Hier sollte angezeigt werden, dass ein RP erstellt und die Rechte darauf vergeben werden.
+    - Here terraform displays, that it will create a RP and permissions on this RP.
 3. terraform apply
-4. Im vCenter schauen, dass der RP angelegt wurden und die entsprechenden Rechte darauf erteilt wurden (This object and its children).
-5. Neue Permission im entity permission object hinzufügen (ganz ans Ende des Objekts)
+4. Take a look at the resource pool in vCenter. Watch the permissions tab, which permissions terraform created. (This object and its children).
+5. Add new permissions to the entity permission object (at the end of the object)
 
 ```hcl
 permissions {
@@ -28,11 +28,11 @@ permissions {
 ```
 
 5. terraform plan
-    - Hier wird nun angezeigt, dass eine neue Permission hinzugefügt wird. ABER: Es wird auch angezeigt, dass an anderen Permissions was geändert wird (weil die User nicht alphabetisch sortiert sind)
-6. Permissions sortieren (mdima -> nfeldhausen -> sbaier -> terraform-demo)
+    - Here terraform shows, that it will add a new permission. But: Terraform also displays, that other permissions will be changed (because the users are not ordered alphabetically)
+6. Sort the permissions (mdima -> nfeldhausen -> sbaier -> terraform-demo)
 7. terraform plan
-    - Zeigt einen ähnlichen Output wie Schritt 5 an, aber wenn beim nächsten Mal am ein User mit beispielsweise mit z eingefügt, wird nur dieser User erstellt und die anderen Änderungen werden nicht angezeigt.
+    - Displays a similar output as in step 5, but if you add an user whicht starts with z for example afterwards terraform will not display these strange changes.
 
-## Aufräumen
+## Cleanup
 
 1. terraform destroy
